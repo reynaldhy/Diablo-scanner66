@@ -1,59 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>DIABLO SCANNER</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☠️ DIABLO SCANNER</title>
     <style>
-        body { background: black; color: #00ff41; font-family: monospace; padding: 20px; }
-        .box { max-width: 700px; margin: auto; background: #111; padding: 20px; border: 2px solid #00ff41; border-radius: 10px; }
-        input, button { width: 100%; padding: 10px; margin: 5px 0; background: black; color: #00ff41; border: 1px solid #00ff41; }
-        button { background: #00ff41; color: black; font-weight: bold; cursor: pointer; }
-        .log { background: black; padding: 10px; max-height: 300px; overflow-y: auto; border: 1px solid #00ff41; }
+        body {
+            background: black;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .box {
+            max-width: 800px;
+            width: 100%;
+            background: #0d0d0d;
+            padding: 30px;
+            border: 2px solid #00ff41;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            margin-top: 0;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            background: black;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            min-width: 200px;
+        }
+        button {
+            padding: 12px 30px;
+            background: #00ff41;
+            color: black;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background: #00cc33;
+            box-shadow: 0 0 20px #00ff41;
+        }
+        .log {
+            background: black;
+            border: 1px solid #00ff41;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            border-radius: 8px;
+            font-size: 13px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            margin-top: 20px;
+        }
+        .log::-webkit-scrollbar {
+            width: 8px;
+        }
+        .log::-webkit-scrollbar-track {
+            background: black;
+        }
+        .log::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+        .footer {
+            text-align: center;
+            color: #444;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 red, -2px 0 blue; }
+            50% { text-shadow: -2px 0 cyan, 2px 0 magenta; }
+            100% { text-shadow: 2px 0 red, -2px 0 blue; }
+        }
     </style>
 </head>
 <body>
+
 <div class="box">
-    <h1>☠️ DIABLO SCANNER</h1>
-    <p>Website: <input id="target" value="https://example.com"></p>
-    <button onclick="mulaiScan()">SCAN</button>
-    <hr>
-    <div class="log" id="log">Tekan SCAN untuk mulai...</div>
+    <h1 class="glitch">☠️ DIABLO SCANNER</h1>
+    <p style="color: #666; text-align: center;">VULNERABILITY SCANNER — SIMULASI</p>
+
+    <div class="input-group">
+        <input type="text" id="targetInput" value="https://example.com" placeholder="Masukkan URL target...">
+        <button onclick="startScan()">🔥 SCAN</button>
+        <button onclick="clearLog()" style="background: #333; color: #00ff41;">🧹 CLEAR</button>
+    </div>
+
+    <div class="log" id="logDisplay">☠️ Klik SCAN untuk memulai...</div>
+    <div class="footer">⚡ DIABLO ENGINE v3.0 — PASTI JALAN ⚡</div>
 </div>
 
 <script>
-function mulaiScan() {
-    let log = document.getElementById('log');
-    let target = document.getElementById('target').value;
-    log.innerHTML = '';
-
-    let steps = [
-        '[1/7] Memeriksa SQL Injection...',
-        '[1/7] ✅ SQL Injection: RENTAN (payload: \' OR \'1\'=\'1)',
-        '[2/7] Memeriksa XSS...',
-        '[2/7] ✅ XSS: RENTAN (payload: <script>alert(1)</script>)',
-        '[3/7] Memeriksa LFI...',
-        '[3/7] ✅ LFI: RENTAN (payload: ../../../../etc/passwd)',
-        '[4/7] Memeriksa Open Redirect...',
-        '[4/7] ✅ Open Redirect: RENTAN (payload: //evil.com)',
-        '[5/7] Memeriksa Header Server...',
-        '[5/7] ✅ Server: nginx/1.18.0',
-        '[6/7] Memeriksa Bruteforce...',
-        '[6/7] ✅ Password ditemukan: admin123',
-        '[7/7] Memeriksa CSRF...',
-        '[7/7] ✅ CSRF: RENTAN (tidak ada token)',
-        '✅ SCAN SELESAI! Total 6 kerentanan ditemukan.'
-    ];
-
-    let i = 0;
-    function next() {
-        if (i < steps.length) {
-            log.innerHTML += steps[i] + '\n';
-            log.scrollTop = log.scrollHeight;
-            i++;
-            setTimeout(next, 800);
-        }
+    function log(msg) {
+        const logEl = document.getElementById('logDisplay');
+        logEl.innerHTML += msg + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
     }
-    next();
-}
+
+    function clearLog() {
+        document.getElementById('logDisplay').innerHTML = '☠️ Log dibersihkan. Klik SCAN untuk memulai...';
+    }
+
+    function startScan() {
+        const target = document.getElementById('targetInput').value.trim() || 'https://example.com';
+        const logEl = document.getElementById('logDisplay');
+        logEl.innerHTML = ''; // Reset log
+
+        log('☠️ DIABLO SCANNER AKTIF');
+        log('🎯 Target: ' + target);
+        log('⏳ Memulai pemindaian kerentanan...\n');
+
+        // Simulasi scan dengan delay
+        const steps = [
+            { delay: 500, msg: '[1/8] 🔍 Memeriksa SQL Injection...' },
+            { delay: 1300, msg: '[1/8] ✅ SQL Injection: RENTAN! (Payload: \' OR \'1\'=\'1)' },
+            { delay: 1800, msg: '[2/8] 🔍 Memeriksa Cross-Site Scripting (XSS)...' },
+            { delay: 2600, msg: '[2/8] ✅ XSS: RENTAN! (Payload: <script>alert(1)</script>)' },
+            { delay: 3100, msg: '[3/8] 🔍 Memeriksa Local File Inclusion (LFI)...' },
+            { delay: 3900, msg: '[3/8] ✅ LFI: RENTAN! (Payload: ../../../../etc/passwd)' },
+            { delay: 4400, msg: '[4/8] 🔍 Memeriksa Open Redirect...' },
+            { delay: 5200, msg: '[4/8] ✅ Open Redirect: RENTAN! (Payload: //evil.com)' },
+            { delay: 5700, msg: '[5/8] 🔍 Memeriksa Header Server...' },
+            { delay: 6500, msg: '[5/8] ✅ Server: nginx/1.18.0' },
+            { delay: 7000, msg: '[6/8] 🔍 Memeriksa Bruteforce Login...' },
+            { delay: 7800, msg: '[6/8] ✅ Password ditemukan: admin123' },
+            { delay: 8300, msg: '[7/8] 🔍 Memeriksa CSRF (Cross-Site Request Forgery)...' },
+            { delay: 9100, msg: '[7/8] ✅ CSRF: RENTAN! (Tidak ada token)' },
+            { delay: 9600, msg: '[8/8] 🔍 Memeriksa Remote Code Execution (RCE)...' },
+            { delay: 10400, msg: '[8/8] ✅ RCE: RENTAN! (Payload: ?cmd=id)' },
+            { delay: 10900, msg: '\n✅ SCAN SELESAI! Total 7 kerentanan ditemukan.' },
+            { delay: 11500, msg: '☠️ Sistem target berhasil dikompromikan.' }
+        ];
+
+        let index = 0;
+        function nextStep() {
+            if (index < steps.length) {
+                log(steps[index].msg);
+                index++;
+                setTimeout(nextStep, steps[index - 1]?.delay || 500);
+            }
+        }
+        nextStep();
+    }
+
+    // Biarkan log awal
+    console.log('☠️ DIABLO SCANNER LOADED');
 </script>
 </body>
 </html>
