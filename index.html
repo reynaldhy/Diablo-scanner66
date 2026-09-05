@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>☠️ DIABLO VULN SCANNER</title>
+    <title>☠️ DIABLO VULN SCANNER v2.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0a;
-            color: #ff0033;
+            color: #00ff41;
             font-family: 'Courier New', monospace;
             padding: 20px;
             display: flex;
@@ -18,41 +18,41 @@
         }
         .container {
             background: #111;
-            border: 2px solid #ff0033;
+            border: 2px solid #00ff41;
             padding: 30px;
             max-width: 1000px;
             width: 100%;
             border-radius: 15px;
-            box-shadow: 0 0 50px #ff003388;
+            box-shadow: 0 0 50px #00ff4133;
         }
-        h1 { text-align: center; text-shadow: 0 0 20px #ff0033; }
-        .subtitle { text-align: center; color: #ff6666; margin-bottom: 20px; letter-spacing: 2px; }
-        .box { background: #1a1a1a; border: 1px solid #ff0033; padding: 15px; margin: 10px 0; border-radius: 10px; }
-        .box h3 { color: #ff0033; margin-bottom: 10px; }
+        h1 { text-align: center; text-shadow: 0 0 20px #00ff41; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 20px; }
+        .box { background: #1a1a1a; border: 1px solid #00ff41; padding: 15px; margin: 10px 0; border-radius: 10px; }
+        .box h3 { color: #00ff41; margin-bottom: 10px; }
         input, button {
             width: 100%;
             padding: 12px;
             margin: 6px 0;
             background: #000;
-            color: #ff0033;
-            border: 1px solid #ff0033;
+            color: #00ff41;
+            border: 1px solid #00ff41;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
         }
         button {
-            background: #ff0033;
+            background: #00ff41;
             color: #000;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
-        button:hover { background: #ff3366; box-shadow: 0 0 30px #ff0033; }
+        button:hover { background: #00cc33; box-shadow: 0 0 30px #00ff41; }
         .row { display: flex; gap: 10px; flex-wrap: wrap; }
         .row button { flex: 1; min-width: 100px; }
         .log {
             background: #000;
-            border: 1px solid #ff0033;
+            border: 1px solid #00ff41;
             padding: 10px;
             max-height: 250px;
             overflow-y: auto;
@@ -63,28 +63,52 @@
         }
         .result-box {
             background: #000;
-            border: 1px solid #ff0033;
+            border: 1px solid #00ff41;
             padding: 15px;
             min-height: 60px;
-            color: #ff8888;
+            color: #88ff88;
             margin: 10px 0;
             font-size: 14px;
         }
         .status { color: #ff8800; margin-top: 10px; }
-        .footer { text-align: center; color: #663333; font-size: 11px; margin-top: 15px; }
+        .footer { text-align: center; color: #444; font-size: 11px; margin-top: 15px; }
         .glitch { animation: glitch 2s infinite; }
         @keyframes glitch {
             0% { text-shadow: 2px 0 red, -2px 0 blue; }
             50% { text-shadow: -2px 0 cyan, 2px 0 magenta; }
             100% { text-shadow: 2px 0 red, -2px 0 blue; }
         }
-        hr { border-color: #ff0033; margin: 15px 0; }
+        hr { border-color: #00ff41; margin: 15px 0; }
+        .badge {
+            background: #00ff41;
+            color: #000;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #000;
+            border: 1px solid #00ff41;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #00ff41;
+            width: 0%;
+            transition: 0.3s;
+            box-shadow: 0 0 20px #00ff41;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1 class="glitch">☠️ DIABLO <span style="color:#fff;">VULN SCANNER</span></h1>
-    <p class="subtitle">「 7 VULNERABILITY SCANNER — REAL & OFFLINE 」</p>
+    <p class="subtitle">「 FULL SIMULATION — 7 VULNERABILITY SCANNER 」</p>
 
     <div class="box">
         <h3>🎯 TARGET</h3>
@@ -96,31 +120,34 @@
         </div>
         <div class="row">
             <button onclick="scanLFI()">📂 LFI</button>
-            <button onclick="scanOpenRedirect()">🔄 OPEN REDIRECT</button>
+            <button onclick="scanOpenRedirect()">🔄 REDIRECT</button>
             <button onclick="scanHeader()">🖥️ HEADER</button>
         </div>
         <div class="row">
             <button onclick="scanBruteforce()">🔨 BRUTEFORCE</button>
+            <button onclick="scanCSRF()">🛡️ CSRF</button>
             <button onclick="clearAll()">🧹 CLEAR</button>
         </div>
     </div>
 
     <div class="box">
         <h3>🔑 HASIL SCAN</h3>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="result-box" id="resultDisplay">☠️ MENUNGGU PERINTAH...</div>
         <div class="log" id="logArea">☠️ SIAP</div>
         <div class="status" id="status">🟢 READY</div>
     </div>
 
-    <div class="footer">⚡ DIABLO VULN SCANNER — 7 IN 1 ⚡</div>
+    <div class="footer">⚡ DIABLO VULN SCANNER v2.0 — 8 IN 1 ⚡</div>
 </div>
 
 <script>
     // =============================================================
-    // 💀 DIABLO VULN SCANNER — 7 JENIS KERENTANAN
+    // 💀 DIABLO VULN SCANNER v2.0 — 8 VULNERABILITY SCANNER
     // =============================================================
 
     let scanResults = [];
+    let progress = 0;
 
     function log(msg, type = 'info') {
         const el = document.getElementById('logArea');
@@ -129,13 +156,23 @@
         el.innerHTML += '\n[' + time + '] ' + icon + ' ' + msg;
         el.scrollTop = el.scrollHeight;
         document.getElementById('status').innerHTML = '🔥 ' + msg;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const el = document.getElementById('progressFill');
+        const totalScans = 8;
+        progress = Math.min((scanResults.length / totalScans) * 100, 100);
+        el.style.width = progress + '%';
     }
 
     function clearAll() {
         document.getElementById('logArea').innerHTML = '☠️ LOG DIHAPUS';
         document.getElementById('resultDisplay').innerHTML = '☠️ MENUNGGU...';
         document.getElementById('status').innerHTML = '🟢 READY';
+        document.getElementById('progressFill').style.width = '0%';
         scanResults = [];
+        progress = 0;
     }
 
     function getTarget() {
@@ -157,31 +194,22 @@
             "' OR '1'='1",
             "' UNION SELECT 1,2,3--",
             "' AND SLEEP(5)--",
-            "' OR 1=1--",
-            "'; DROP TABLE users--"
+            "' OR 1=1--"
         ];
 
-        let found = false;
-        payloads.forEach((p, i) => {
-            setTimeout(() => {
-                const url = target + (target.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(p);
-                fetch(url, { mode: 'no-cors' })
-                    .then(() => {
-                        if (!found) {
-                            found = true;
-                            log('✅ SQLi RENTAN: ' + p, 'success');
-                            updateResult('💉 SQLi FOUND!\nPayload: ' + p);
-                            scanResults.push({ type: 'SQLi', payload: p });
-                        }
-                    })
-                    .catch(() => {});
-            }, i * 600);
-        });
-
         setTimeout(() => {
-            if (!found) { log('❌ TIDAK ADA SQLi', 'error');
-            updateResult('❌ TIDAK ADA SQLi'); }
-        }, payloads.length * 600 + 1000);
+            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
+            const found = Math.random() > 0.3;
+            if (found) {
+                log('✅ SQLi RENTAN: ' + randomPayload, 'success');
+                updateResult('💉 SQLi FOUND!\nPayload: ' + randomPayload);
+                scanResults.push({ type: 'SQLi', payload: randomPayload });
+            } else {
+                log('❌ TIDAK ADA SQLi', 'error');
+                updateResult('❌ TIDAK ADA SQLi');
+            }
+            updateProgress();
+        }, 1500);
     }
 
     // ====== 2. XSS ======
@@ -194,32 +222,22 @@
         const payloads = [
             '<script>alert(1)</script>',
             '<img src=x onerror=alert(1)>',
-            '"><script>alert(1)</script>',
-            'javascript:alert(1)',
-            '<svg/onload=alert(1)>'
+            '"><script>alert(1)</script>'
         ];
 
-        let found = false;
-        payloads.forEach((p, i) => {
-            setTimeout(() => {
-                const url = target + (target.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(p);
-                fetch(url, { mode: 'no-cors' })
-                    .then(() => {
-                        if (!found) {
-                            found = true;
-                            log('✅ XSS RENTAN: ' + p, 'success');
-                            updateResult('🧪 XSS FOUND!\nPayload: ' + p);
-                            scanResults.push({ type: 'XSS', payload: p });
-                        }
-                    })
-                    .catch(() => {});
-            }, i * 600 + 1000);
-        });
-
         setTimeout(() => {
-            if (!found) { log('❌ TIDAK ADA XSS', 'error');
-            updateResult('❌ TIDAK ADA XSS'); }
-        }, payloads.length * 600 + 2000);
+            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
+            const found = Math.random() > 0.3;
+            if (found) {
+                log('✅ XSS RENTAN: ' + randomPayload, 'success');
+                updateResult('🧪 XSS FOUND!\nPayload: ' + randomPayload);
+                scanResults.push({ type: 'XSS', payload: randomPayload });
+            } else {
+                log('❌ TIDAK ADA XSS', 'error');
+                updateResult('❌ TIDAK ADA XSS');
+            }
+            updateProgress();
+        }, 1500);
     }
 
     // ====== 3. LFI ======
@@ -231,32 +249,22 @@
 
         const payloads = [
             '../../../../etc/passwd',
-            '../../../../windows/win.ini',
-            'php://filter/convert.base64-encode/resource=index.php',
-            'file:///etc/passwd'
+            'php://filter/convert.base64-encode/resource=index.php'
         ];
 
-        let found = false;
-        payloads.forEach((p, i) => {
-            setTimeout(() => {
-                const url = target + (target.includes('?') ? '&' : '?') + 'file=' + encodeURIComponent(p);
-                fetch(url, { mode: 'no-cors' })
-                    .then(() => {
-                        if (!found) {
-                            found = true;
-                            log('✅ LFI RENTAN: ' + p, 'success');
-                            updateResult('📂 LFI FOUND!\nPayload: ' + p);
-                            scanResults.push({ type: 'LFI', payload: p });
-                        }
-                    })
-                    .catch(() => {});
-            }, i * 600 + 2000);
-        });
-
         setTimeout(() => {
-            if (!found) { log('❌ TIDAK ADA LFI', 'error');
-            updateResult('❌ TIDAK ADA LFI'); }
-        }, payloads.length * 600 + 3000);
+            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
+            const found = Math.random() > 0.4;
+            if (found) {
+                log('✅ LFI RENTAN: ' + randomPayload, 'success');
+                updateResult('📂 LFI FOUND!\nPayload: ' + randomPayload);
+                scanResults.push({ type: 'LFI', payload: randomPayload });
+            } else {
+                log('❌ TIDAK ADA LFI', 'error');
+                updateResult('❌ TIDAK ADA LFI');
+            }
+            updateProgress();
+        }, 1500);
     }
 
     // ====== 4. OPEN REDIRECT ======
@@ -269,31 +277,22 @@
         const payloads = [
             '//evil.com',
             'https://evil.com',
-            '//google.com@evil.com',
             '?redirect=//evil.com'
         ];
 
-        let found = false;
-        payloads.forEach((p, i) => {
-            setTimeout(() => {
-                const url = target + (target.includes('?') ? '&' : '?') + 'redirect=' + encodeURIComponent(p);
-                fetch(url, { mode: 'no-cors' })
-                    .then(() => {
-                        if (!found) {
-                            found = true;
-                            log('🔄 OPEN REDIRECT RENTAN: ' + p, 'success');
-                            updateResult('🔄 OPEN REDIRECT FOUND!\nPayload: ' + p);
-                            scanResults.push({ type: 'Open Redirect', payload: p });
-                        }
-                    })
-                    .catch(() => {});
-            }, i * 600 + 3000);
-        });
-
         setTimeout(() => {
-            if (!found) { log('❌ TIDAK ADA OPEN REDIRECT', 'error');
-            updateResult('❌ TIDAK ADA OPEN REDIRECT'); }
-        }, payloads.length * 600 + 4000);
+            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
+            const found = Math.random() > 0.4;
+            if (found) {
+                log('🔄 OPEN REDIRECT RENTAN: ' + randomPayload, 'success');
+                updateResult('🔄 OPEN REDIRECT FOUND!\nPayload: ' + randomPayload);
+                scanResults.push({ type: 'Open Redirect', payload: randomPayload });
+            } else {
+                log('❌ TIDAK ADA OPEN REDIRECT', 'error');
+                updateResult('❌ TIDAK ADA OPEN REDIRECT');
+            }
+            updateProgress();
+        }, 1500);
     }
 
     // ====== 5. HEADER SCAN ======
@@ -303,23 +302,15 @@
         log('🖥️ HEADER SCAN...', 'info');
         updateResult('🔍 SCANNING HEADERS...');
 
-        fetch(target, { method: 'HEAD' })
-            .then(res => {
-                const headers = res.headers;
-                let result = '🖥️ HEADER INFORMATION:\n';
-                result += 'Server: ' + (headers.get('server') || 'Unknown') + '\n';
-                result += 'X-Powered-By: ' + (headers.get('x-powered-by') || 'Unknown') + '\n';
-                result += 'Content-Type: ' + (headers.get('content-type') || 'Unknown') + '\n';
-                result += 'X-Frame-Options: ' + (headers.get('x-frame-options') || 'Tidak ada') + '\n';
-                result += 'X-Content-Type-Options: ' + (headers.get('x-content-type-options') || 'Tidak ada') + '\n';
-                log('🖥️ HEADER SCAN SELESAI', 'success');
-                updateResult(result);
-                scanResults.push({ type: 'Header', payload: result });
-            })
-            .catch(err => {
-                log('❌ HEADER SCAN GAGAL: ' + err.message, 'error');
-                updateResult('❌ HEADER SCAN GAGAL');
-            });
+        setTimeout(() => {
+            const servers = ['nginx/1.18.0', 'Apache/2.4.41', 'Cloudflare', 'Unknown'];
+            const server = servers[Math.floor(Math.random() * servers.length)];
+            const result = '🖥️ HEADER INFORMATION:\nServer: ' + server + '\nX-Powered-By: PHP/7.4\nContent-Type: text/html';
+            log('🖥️ HEADER SCAN SELESAI', 'success');
+            updateResult(result);
+            scanResults.push({ type: 'Header', payload: result });
+            updateProgress();
+        }, 1500);
     }
 
     // ====== 6. BRUTEFORCE ======
@@ -329,63 +320,69 @@
         log('🔨 BRUTEFORCE LOGIN...', 'info');
         updateResult('🔨 BRUTEFORCING...');
 
-        const passwords = [
-            'admin', 'password', '12345', 'qwerty', 'admin123',
-            'password123', '123456', 'letmein', 'welcome', 'monkey',
-            'dragon', 'master', 'sunshine', 'princess', 'iloveyou'
-        ];
-
-        let found = false;
-        passwords.forEach((p, i) => {
-            setTimeout(() => {
-                const loginUrl = target + '/login.php';
-                fetch(loginUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'username=admin&password=' + encodeURIComponent(p)
-                })
-                .then(res => {
-                    if (res.status === 200) {
-                        if (!found) {
-                            found = true;
-                            log('✅ PASSWORD DITEMUKAN: ' + p, 'success');
-                            updateResult('🔑 LOGIN BERHASIL!\nPassword: ' + p);
-                            scanResults.push({ type: 'Password', payload: p });
-                        }
-                    }
-                })
-                .catch(() => {});
-            }, i * 500);
-        });
+        const passwords = ['admin', 'password', '12345', 'admin123', 'password123'];
 
         setTimeout(() => {
-            if (!found) { log('❌ BRUTEFORCE GAGAL', 'error');
-            updateResult('❌ BRUTEFORCE GAGAL'); }
-        }, passwords.length * 500 + 2000);
+            const randomPass = passwords[Math.floor(Math.random() * passwords.length)];
+            const found = Math.random() > 0.5;
+            if (found) {
+                log('✅ PASSWORD DITEMUKAN: ' + randomPass, 'success');
+                updateResult('🔑 LOGIN BERHASIL!\nPassword: ' + randomPass);
+                scanResults.push({ type: 'Password', payload: randomPass });
+            } else {
+                log('❌ BRUTEFORCE GAGAL', 'error');
+                updateResult('❌ BRUTEFORCE GAGAL');
+            }
+            updateProgress();
+        }, 2000);
     }
 
-    // ====== 7. FULL SCAN ======
+    // ====== 7. CSRF ======
+    function scanCSRF() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🛡️ CSRF SCAN...', 'info');
+        updateResult('🔍 SCANNING CSRF...');
+
+        setTimeout(() => {
+            const found = Math.random() > 0.5;
+            if (found) {
+                log('🛡️ CSRF RENTAN — TIDAK ADA TOKEN!', 'success');
+                updateResult('🛡️ CSRF VULNERABILITY FOUND!\nNo CSRF token detected');
+                scanResults.push({ type: 'CSRF', payload: 'No CSRF token' });
+            } else {
+                log('🛡️ CSRF AMAN — ADA TOKEN', 'success');
+                updateResult('🛡️ CSRF AMAN');
+            }
+            updateProgress();
+        }, 1500);
+    }
+
+    // ====== 8. FULL SCAN ======
     function startFullScan() {
         const target = getTarget();
         if (!target) { log('TARGET KOSONG!', 'error'); return; }
         log('🔥 FULL SCAN START: ' + target, 'info');
         updateResult('🔥 FULL SCANNING...');
         scanResults = [];
+        document.getElementById('progressFill').style.width = '0%';
 
         scanSQLi();
-        setTimeout(scanXSS, 3000);
-        setTimeout(scanLFI, 6000);
-        setTimeout(scanOpenRedirect, 9000);
-        setTimeout(scanHeader, 12000);
-        setTimeout(scanBruteforce, 15000);
+        setTimeout(scanXSS, 2000);
+        setTimeout(scanLFI, 4000);
+        setTimeout(scanOpenRedirect, 6000);
+        setTimeout(scanHeader, 8000);
+        setTimeout(scanBruteforce, 10000);
+        setTimeout(scanCSRF, 12000);
 
         setTimeout(() => {
             log('✅ FULL SCAN SELESAI!', 'success');
             updateResult('✅ FULL SCAN SELESAI!\nTotal Vuln Ditemukan: ' + scanResults.length);
-        }, 18000);
+            document.getElementById('progressFill').style.width = '100%';
+        }, 14000);
     }
 
-    log('☠️ DIABLO VULN SCANNER SIAP!', 'info');
+    log('☠️ DIABLO VULN SCANNER v2.0 SIAP!', 'info');
     log('💡 MASUKKAN TARGET DAN KLIK SCAN', 'info');
 </script>
 </body>
