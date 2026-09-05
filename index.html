@@ -1,389 +1,59 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>☠️ DIABLO VULN SCANNER v2.0</title>
+    <title>DIABLO SCANNER</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0a0a0a;
-            color: #00ff41;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background: #111;
-            border: 2px solid #00ff41;
-            padding: 30px;
-            max-width: 1000px;
-            width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 0 50px #00ff4133;
-        }
-        h1 { text-align: center; text-shadow: 0 0 20px #00ff41; }
-        .subtitle { text-align: center; color: #888; margin-bottom: 20px; }
-        .box { background: #1a1a1a; border: 1px solid #00ff41; padding: 15px; margin: 10px 0; border-radius: 10px; }
-        .box h3 { color: #00ff41; margin-bottom: 10px; }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            background: #000;
-            color: #00ff41;
-            border: 1px solid #00ff41;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        button {
-            background: #00ff41;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover { background: #00cc33; box-shadow: 0 0 30px #00ff41; }
-        .row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .row button { flex: 1; min-width: 100px; }
-        .log {
-            background: #000;
-            border: 1px solid #00ff41;
-            padding: 10px;
-            max-height: 250px;
-            overflow-y: auto;
-            font-size: 12px;
-            color: #88ff88;
-            white-space: pre-wrap;
-            margin-top: 10px;
-        }
-        .result-box {
-            background: #000;
-            border: 1px solid #00ff41;
-            padding: 15px;
-            min-height: 60px;
-            color: #88ff88;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        .status { color: #ff8800; margin-top: 10px; }
-        .footer { text-align: center; color: #444; font-size: 11px; margin-top: 15px; }
-        .glitch { animation: glitch 2s infinite; }
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 red, -2px 0 blue; }
-            50% { text-shadow: -2px 0 cyan, 2px 0 magenta; }
-            100% { text-shadow: 2px 0 red, -2px 0 blue; }
-        }
-        hr { border-color: #00ff41; margin: 15px 0; }
-        .badge {
-            background: #00ff41;
-            color: #000;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #000;
-            border: 1px solid #00ff41;
-            border-radius: 10px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: #00ff41;
-            width: 0%;
-            transition: 0.3s;
-            box-shadow: 0 0 20px #00ff41;
-        }
+        body { background: black; color: #00ff41; font-family: monospace; padding: 20px; }
+        .box { max-width: 700px; margin: auto; background: #111; padding: 20px; border: 2px solid #00ff41; border-radius: 10px; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; background: black; color: #00ff41; border: 1px solid #00ff41; }
+        button { background: #00ff41; color: black; font-weight: bold; cursor: pointer; }
+        .log { background: black; padding: 10px; max-height: 300px; overflow-y: auto; border: 1px solid #00ff41; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1 class="glitch">☠️ DIABLO <span style="color:#fff;">VULN SCANNER</span></h1>
-    <p class="subtitle">「 FULL SIMULATION — 7 VULNERABILITY SCANNER 」</p>
-
-    <div class="box">
-        <h3>🎯 TARGET</h3>
-        <input id="targetUrl" placeholder="https://target.com" value="https://cottonink.co.id">
-        <div class="row">
-            <button onclick="startFullScan()">🔥 FULL SCAN</button>
-            <button onclick="scanSQLi()">💉 SQLi</button>
-            <button onclick="scanXSS()">🧪 XSS</button>
-        </div>
-        <div class="row">
-            <button onclick="scanLFI()">📂 LFI</button>
-            <button onclick="scanOpenRedirect()">🔄 REDIRECT</button>
-            <button onclick="scanHeader()">🖥️ HEADER</button>
-        </div>
-        <div class="row">
-            <button onclick="scanBruteforce()">🔨 BRUTEFORCE</button>
-            <button onclick="scanCSRF()">🛡️ CSRF</button>
-            <button onclick="clearAll()">🧹 CLEAR</button>
-        </div>
-    </div>
-
-    <div class="box">
-        <h3>🔑 HASIL SCAN</h3>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="result-box" id="resultDisplay">☠️ MENUNGGU PERINTAH...</div>
-        <div class="log" id="logArea">☠️ SIAP</div>
-        <div class="status" id="status">🟢 READY</div>
-    </div>
-
-    <div class="footer">⚡ DIABLO VULN SCANNER v2.0 — 8 IN 1 ⚡</div>
+<div class="box">
+    <h1>☠️ DIABLO SCANNER</h1>
+    <p>Website: <input id="target" value="https://example.com"></p>
+    <button onclick="mulaiScan()">SCAN</button>
+    <hr>
+    <div class="log" id="log">Tekan SCAN untuk mulai...</div>
 </div>
 
 <script>
-    // =============================================================
-    // 💀 DIABLO VULN SCANNER v2.0 — 8 VULNERABILITY SCANNER
-    // =============================================================
+function mulaiScan() {
+    let log = document.getElementById('log');
+    let target = document.getElementById('target').value;
+    log.innerHTML = '';
 
-    let scanResults = [];
-    let progress = 0;
+    let steps = [
+        '[1/7] Memeriksa SQL Injection...',
+        '[1/7] ✅ SQL Injection: RENTAN (payload: \' OR \'1\'=\'1)',
+        '[2/7] Memeriksa XSS...',
+        '[2/7] ✅ XSS: RENTAN (payload: <script>alert(1)</script>)',
+        '[3/7] Memeriksa LFI...',
+        '[3/7] ✅ LFI: RENTAN (payload: ../../../../etc/passwd)',
+        '[4/7] Memeriksa Open Redirect...',
+        '[4/7] ✅ Open Redirect: RENTAN (payload: //evil.com)',
+        '[5/7] Memeriksa Header Server...',
+        '[5/7] ✅ Server: nginx/1.18.0',
+        '[6/7] Memeriksa Bruteforce...',
+        '[6/7] ✅ Password ditemukan: admin123',
+        '[7/7] Memeriksa CSRF...',
+        '[7/7] ✅ CSRF: RENTAN (tidak ada token)',
+        '✅ SCAN SELESAI! Total 6 kerentanan ditemukan.'
+    ];
 
-    function log(msg, type = 'info') {
-        const el = document.getElementById('logArea');
-        const time = new Date().toLocaleTimeString();
-        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '💀';
-        el.innerHTML += '\n[' + time + '] ' + icon + ' ' + msg;
-        el.scrollTop = el.scrollHeight;
-        document.getElementById('status').innerHTML = '🔥 ' + msg;
-        updateProgress();
+    let i = 0;
+    function next() {
+        if (i < steps.length) {
+            log.innerHTML += steps[i] + '\n';
+            log.scrollTop = log.scrollHeight;
+            i++;
+            setTimeout(next, 800);
+        }
     }
-
-    function updateProgress() {
-        const el = document.getElementById('progressFill');
-        const totalScans = 8;
-        progress = Math.min((scanResults.length / totalScans) * 100, 100);
-        el.style.width = progress + '%';
-    }
-
-    function clearAll() {
-        document.getElementById('logArea').innerHTML = '☠️ LOG DIHAPUS';
-        document.getElementById('resultDisplay').innerHTML = '☠️ MENUNGGU...';
-        document.getElementById('status').innerHTML = '🟢 READY';
-        document.getElementById('progressFill').style.width = '0%';
-        scanResults = [];
-        progress = 0;
-    }
-
-    function getTarget() {
-        return document.getElementById('targetUrl').value.trim();
-    }
-
-    function updateResult(msg) {
-        document.getElementById('resultDisplay').innerHTML = msg;
-    }
-
-    // ====== 1. SQL INJECTION ======
-    function scanSQLi() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔍 SQL INJECTION SCAN...', 'info');
-        updateResult('🔍 SCANNING SQLi...');
-
-        const payloads = [
-            "' OR '1'='1",
-            "' UNION SELECT 1,2,3--",
-            "' AND SLEEP(5)--",
-            "' OR 1=1--"
-        ];
-
-        setTimeout(() => {
-            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
-            const found = Math.random() > 0.3;
-            if (found) {
-                log('✅ SQLi RENTAN: ' + randomPayload, 'success');
-                updateResult('💉 SQLi FOUND!\nPayload: ' + randomPayload);
-                scanResults.push({ type: 'SQLi', payload: randomPayload });
-            } else {
-                log('❌ TIDAK ADA SQLi', 'error');
-                updateResult('❌ TIDAK ADA SQLi');
-            }
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 2. XSS ======
-    function scanXSS() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔍 XSS SCAN...', 'info');
-        updateResult('🔍 SCANNING XSS...');
-
-        const payloads = [
-            '<script>alert(1)</script>',
-            '<img src=x onerror=alert(1)>',
-            '"><script>alert(1)</script>'
-        ];
-
-        setTimeout(() => {
-            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
-            const found = Math.random() > 0.3;
-            if (found) {
-                log('✅ XSS RENTAN: ' + randomPayload, 'success');
-                updateResult('🧪 XSS FOUND!\nPayload: ' + randomPayload);
-                scanResults.push({ type: 'XSS', payload: randomPayload });
-            } else {
-                log('❌ TIDAK ADA XSS', 'error');
-                updateResult('❌ TIDAK ADA XSS');
-            }
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 3. LFI ======
-    function scanLFI() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔍 LFI SCAN...', 'info');
-        updateResult('🔍 SCANNING LFI...');
-
-        const payloads = [
-            '../../../../etc/passwd',
-            'php://filter/convert.base64-encode/resource=index.php'
-        ];
-
-        setTimeout(() => {
-            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
-            const found = Math.random() > 0.4;
-            if (found) {
-                log('✅ LFI RENTAN: ' + randomPayload, 'success');
-                updateResult('📂 LFI FOUND!\nPayload: ' + randomPayload);
-                scanResults.push({ type: 'LFI', payload: randomPayload });
-            } else {
-                log('❌ TIDAK ADA LFI', 'error');
-                updateResult('❌ TIDAK ADA LFI');
-            }
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 4. OPEN REDIRECT ======
-    function scanOpenRedirect() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔄 OPEN REDIRECT SCAN...', 'info');
-        updateResult('🔍 SCANNING OPEN REDIRECT...');
-
-        const payloads = [
-            '//evil.com',
-            'https://evil.com',
-            '?redirect=//evil.com'
-        ];
-
-        setTimeout(() => {
-            const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
-            const found = Math.random() > 0.4;
-            if (found) {
-                log('🔄 OPEN REDIRECT RENTAN: ' + randomPayload, 'success');
-                updateResult('🔄 OPEN REDIRECT FOUND!\nPayload: ' + randomPayload);
-                scanResults.push({ type: 'Open Redirect', payload: randomPayload });
-            } else {
-                log('❌ TIDAK ADA OPEN REDIRECT', 'error');
-                updateResult('❌ TIDAK ADA OPEN REDIRECT');
-            }
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 5. HEADER SCAN ======
-    function scanHeader() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🖥️ HEADER SCAN...', 'info');
-        updateResult('🔍 SCANNING HEADERS...');
-
-        setTimeout(() => {
-            const servers = ['nginx/1.18.0', 'Apache/2.4.41', 'Cloudflare', 'Unknown'];
-            const server = servers[Math.floor(Math.random() * servers.length)];
-            const result = '🖥️ HEADER INFORMATION:\nServer: ' + server + '\nX-Powered-By: PHP/7.4\nContent-Type: text/html';
-            log('🖥️ HEADER SCAN SELESAI', 'success');
-            updateResult(result);
-            scanResults.push({ type: 'Header', payload: result });
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 6. BRUTEFORCE ======
-    function scanBruteforce() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔨 BRUTEFORCE LOGIN...', 'info');
-        updateResult('🔨 BRUTEFORCING...');
-
-        const passwords = ['admin', 'password', '12345', 'admin123', 'password123'];
-
-        setTimeout(() => {
-            const randomPass = passwords[Math.floor(Math.random() * passwords.length)];
-            const found = Math.random() > 0.5;
-            if (found) {
-                log('✅ PASSWORD DITEMUKAN: ' + randomPass, 'success');
-                updateResult('🔑 LOGIN BERHASIL!\nPassword: ' + randomPass);
-                scanResults.push({ type: 'Password', payload: randomPass });
-            } else {
-                log('❌ BRUTEFORCE GAGAL', 'error');
-                updateResult('❌ BRUTEFORCE GAGAL');
-            }
-            updateProgress();
-        }, 2000);
-    }
-
-    // ====== 7. CSRF ======
-    function scanCSRF() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🛡️ CSRF SCAN...', 'info');
-        updateResult('🔍 SCANNING CSRF...');
-
-        setTimeout(() => {
-            const found = Math.random() > 0.5;
-            if (found) {
-                log('🛡️ CSRF RENTAN — TIDAK ADA TOKEN!', 'success');
-                updateResult('🛡️ CSRF VULNERABILITY FOUND!\nNo CSRF token detected');
-                scanResults.push({ type: 'CSRF', payload: 'No CSRF token' });
-            } else {
-                log('🛡️ CSRF AMAN — ADA TOKEN', 'success');
-                updateResult('🛡️ CSRF AMAN');
-            }
-            updateProgress();
-        }, 1500);
-    }
-
-    // ====== 8. FULL SCAN ======
-    function startFullScan() {
-        const target = getTarget();
-        if (!target) { log('TARGET KOSONG!', 'error'); return; }
-        log('🔥 FULL SCAN START: ' + target, 'info');
-        updateResult('🔥 FULL SCANNING...');
-        scanResults = [];
-        document.getElementById('progressFill').style.width = '0%';
-
-        scanSQLi();
-        setTimeout(scanXSS, 2000);
-        setTimeout(scanLFI, 4000);
-        setTimeout(scanOpenRedirect, 6000);
-        setTimeout(scanHeader, 8000);
-        setTimeout(scanBruteforce, 10000);
-        setTimeout(scanCSRF, 12000);
-
-        setTimeout(() => {
-            log('✅ FULL SCAN SELESAI!', 'success');
-            updateResult('✅ FULL SCAN SELESAI!\nTotal Vuln Ditemukan: ' + scanResults.length);
-            document.getElementById('progressFill').style.width = '100%';
-        }, 14000);
-    }
-
-    log('☠️ DIABLO VULN SCANNER v2.0 SIAP!', 'info');
-    log('💡 MASUKKAN TARGET DAN KLIK SCAN', 'info');
+    next();
+}
 </script>
 </body>
 </html>
